@@ -61,8 +61,22 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
 
 ## In-memory, initially empty.
 <#dataset1> rdf:type ja:RDFDataset ;
-    ja:defaultGraph       <#model_inf> ;
+    ja:defaultGraph       <#mem_inf> ;
      .
+
+# ---- RDFS Inference models
+# These must be incorporate in a dataset in order to use them.
+# All in one file.
+
+<#mem_inf> a ja:InfModel ;
+    rdfs:label "RDFS Inference Model" ;
+    ja:baseModel 
+        [ a ja:MemoryModel ;
+          ja:content [ja:externalContent <file:Data/test_data_rdfs.ttl>] ;
+        ] ;
+    ja:reasoner
+         [ ja:reasonerURL <http://jena.hpl.hp.com/2003/RDFSExptRuleReasoner> ]
+    .
 
 ## ---------------------------------------------------------------
 ## Read-only access to a small books database.
@@ -93,19 +107,20 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
     .
 
 <#dataset2> rdf:type       ja:RDFDataset ;
-    ja:defaultGraph       <#model_inf> ;
+    ja:defaultGraph       <#tdb_inf> ;
      .
 
 # ---- RDFS Inference models
 # These must be incorporate in a dataset in order to use them.
 # All in one file.
 
-<#model_inf> a ja:InfModel ;
+<#tdb_inf> a ja:InfModel ;
     rdfs:label "RDFS Inference Model" ;
-    ja:baseModel 
-        [ a ja:MemoryModel ;
-          ja:content [ja:externalContent <file:Data/test_data_rdfs.ttl>] ;
-        ] ;
+    ja:baseModel <#tdbGraph> ;
     ja:reasoner
          [ ja:reasonerURL <http://jena.hpl.hp.com/2003/RDFSExptRuleReasoner> ]
+    .
+
+<#tdbGraph> a tdb:GraphTDB;
+    tdb:location "DB";
     .
