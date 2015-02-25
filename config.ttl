@@ -8,6 +8,7 @@
 @prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
 @prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
+@prefix text:    <http://jena.apache.org/text#> .
 
 [] a fuseki:Server ;
    # Timeout - server-wide default: milliseconds.
@@ -125,6 +126,7 @@ text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
 :text_dataset a text:TextDataset ;
     text:dataset   <#tdb_inf_ds> ;
     text:index     <#indexLucene> ;
+    .
 
 # Text index description
 <#indexLucene> a text:TextIndexLucene ;
