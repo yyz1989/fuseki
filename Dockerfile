@@ -6,10 +6,14 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
 	apt-get upgrade -y 
 
-RUN apt-get install -y -q openjdk-7-jdk wget curl vim openssh-server
+RUN apt-get install -y -q openjdk-7-jdk wget curl nano
 
 RUN apt-get install -y ruby ruby-dev ruby-bundler && \
 	rm -rf /var/lib/apt/lists/*
+
+RUN apt-get install -y -q openssh-server && \
+	mkdir /var/run/sshd && \
+	echo "root:root" | chpasswd
 
 RUN wget http://apache.belnet.be/jena/binaries/jena-fuseki-1.1.1-distribution.tar.gz
 
@@ -25,8 +29,10 @@ RUN tar xzf jena*.tar.gz && \
 
 RUN export PATH=$PATH:/fuseki
 
-EXPOSE 3030
+EXPOSE 3030 22
 
 WORKDIR /fuseki
+
+COPY config.ttl /fuseki
 
 CMD ["fuseki-server", "--update --mem /ds"]

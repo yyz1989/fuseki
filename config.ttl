@@ -1,11 +1,10 @@
 # Licensed under the terms of http://www.apache.org/licenses/LICENSE-2.0
 
-## A collection of example configurations for Fuseki
+## Fuseki memory + TDB + reasoner
 
 @prefix :        <#> .
 @prefix fuseki:  <http://jena.apache.org/fuseki#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-
 @prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
 @prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
@@ -20,9 +19,9 @@
    # ja:loadClass "your.code.Class" ;
 
    fuseki:services (
-     <#service1>
-     <#service2>
-     <#service3>
+     <#memory>
+	 <#test>
+     <#tdb>
    ) .
 
 # Custom code.
@@ -35,38 +34,40 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
 ## ---------------------------------------------------------------
 ## Updatable in-memory dataset.
 
-<#service1> rdf:type fuseki:Service ;
-    # URI of the dataset -- http://host:port/ds
-    fuseki:name                     "ds" ; 
+<#memory> rdf:type fuseki:Service ;
+    # URI of the dataset -- http://host:port/memory
+    fuseki:name                     "memory" ; 
 
-    # SPARQL query services e.g. http://host:port/ds/sparql?query=...
+    # SPARQL query services e.g. http://host:port/memory/sparql?query=...
     fuseki:serviceQuery             "sparql" ;
     fuseki:serviceQuery             "query" ;
-    # SPARQL Update service -- http://host:port/ds/update?request=...
-    fuseki:serviceUpdate            "update" ;   # SPARQL query service -- /ds/update
+    # SPARQL Update service -- http://host:port/memory/update?request=...
+    fuseki:serviceUpdate            "update" ;   # SPARQL query service -- /memory/update
 
-    # Upload service -- http://host:port/ds/upload?graph=default or ?graph=URI or ?default
+    # Upload service -- http://host:port/memory/upload?graph=default or ?graph=URI or ?default
     # followed by a multipart body, each part being RDF syntax.
     # Syntax determined by the file name extension.
     fuseki:serviceUpload            "upload" ;   # Non-SPARQL upload service
 
     # SPARQL Graph store protocol (read and write)
-    # GET, PUT, POST DELETE to http://host:port/ds/data?graph= or ?default=
+    # GET, PUT, POST DELETE to http://host:port/memory/data?graph= or ?default=
     fuseki:serviceReadWriteGraphStore      "data" ;     
 
     # A separate read-only graph store endpoint:
-    fuseki:serviceReadGraphStore       "get" ;   # Graph store protocol (read only) -- /ds/get
+    fuseki:serviceReadGraphStore       "get" ;   # Graph store protocol (read only) -- /memory/get
 
-    fuseki:dataset           <#emptyDataset> ;
+    fuseki:dataset           <#dataset1> ;
     .
 
 ## In-memory, initially empty.
-<#emptyDataset> rdf:type ja:RDFDataset .
+<#dataset1> rdf:type ja:RDFDataset ;
+    ja:defaultGraph       <#model_inf> ;
+     .
 
 ## ---------------------------------------------------------------
 ## Read-only access to a small books database.
 
-<#service2> rdf:type fuseki:Service ;
+<#test> rdf:type fuseki:Service ;
     fuseki:name                     "books" ;    # http://host:port/books
     fuseki:serviceQuery             "query" ;    # SPARQL query service
     fuseki:serviceReadGraphStore    "get" ;      # SPARQL Graph store protocol (read only)
@@ -83,24 +84,24 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
       ] ;
     .
 ## ---------------------------------------------------------------
-## TDB dataset with only SPARQL query.
+## TDB dataset.
 
-<#service3>  rdf:type fuseki:Service ;
-    fuseki:name              "inf" ;             # http://host/inf
+<#tdb>  rdf:type fuseki:Service ;
+    fuseki:name              "tdb" ;             # http://host/tdb
     fuseki:serviceQuery      "sparql" ;          # SPARQL query service
-    fuseki:dataset           <#dataset> ;
+    fuseki:dataset           <#dataset2> ;
     .
 
-<#dataset> rdf:type       ja:RDFDataset ;
-    ja:defaultGraph       <#model_inf_2> ;
+<#dataset2> rdf:type       ja:RDFDataset ;
+    ja:defaultGraph       <#model_inf> ;
      .
 
 # ---- RDFS Inference models
 # These must be incorporate in a dataset in order to use them.
 # All in one file.
 
-<#model_inf_1> a ja:InfModel ;
-    rdfs:label "Inf-1" ;
+<#model_inf> a ja:InfModel ;
+    rdfs:label "RDFS Inference Model" ;
     ja:baseModel 
         [ a ja:MemoryModel ;
           ja:content [ja:externalContent <file:Data/test_data_rdfs.ttl>] ;
@@ -108,17 +109,3 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
     ja:reasoner
          [ ja:reasonerURL <http://jena.hpl.hp.com/2003/RDFSExptRuleReasoner> ]
     .
-
-# Separate ABox and TBox
-
-<#model_inf_2> a ja:InfModel ;
-    rdfs:label "Inf-2" ;
-    ja:baseModel 
-        [ a ja:MemoryModel ;
-          ja:content [ja:externalContent <file:Data/test_abox.ttl>] ;
-          ja:content [ja:externalContent <file:Data/test_tbox.ttl>] ;
-        ] ;
-    ja:reasoner
-         [ ja:reasonerURL <http://jena.hpl.hp.com/2003/RDFSExptRuleReasoner> ] 
-    . 
-
