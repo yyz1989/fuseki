@@ -9,7 +9,7 @@
 @prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
 @prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
 
-[] rdf:type fuseki:Server ;
+[] a fuseki:Server ;
    # Timeout - server-wide default: milliseconds.
    # Format 1: "1000" -- 1 second timeout
    # Format 2: "10000,60000" -- 10s timeout to first result, then 60s timeout to for rest of query.
@@ -20,7 +20,6 @@
 
    fuseki:services (
      <#memory>
-	 <#test>
      <#tdb>
    ) .
 
@@ -34,7 +33,7 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
 ## ---------------------------------------------------------------
 ## Updatable in-memory dataset.
 
-<#memory> rdf:type fuseki:Service ;
+<#memory> a fuseki:Service ;
     # URI of the dataset -- http://host:port/memory
     fuseki:name                     "memory" ; 
 
@@ -60,7 +59,7 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
     .
 
 ## In-memory, initially empty.
-<#dataset1> rdf:type ja:RDFDataset ;
+<#dataset1> a ja:RDFDataset ;
     ja:defaultGraph       <#mem_inf> ;
      .
 
@@ -81,29 +80,65 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
 ## ---------------------------------------------------------------
 ## TDB dataset.
 
-<#tdb>  rdf:type fuseki:Service ;
+<#tdb> a fuseki:Service ;
     fuseki:name              "tdb" ;             # http://host/tdb
     fuseki:serviceQuery      "sparql" ;          # SPARQL query service
     fuseki:serviceQuery      "query" ;
     fuseki:serviceUpdate     "update" ;
-    fuseki:dataset           <#dataset2> ;
+    fuseki:dataset           :text_dataset ;
     .
-
-<#dataset2> rdf:type       ja:RDFDataset ;
-    ja:defaultGraph       <#tdb_inf> ;
-     .
 
 # ---- RDFS Inference models
 # These must be incorporate in a dataset in order to use them.
 # All in one file.
+<#tdb_inf_ds> a ja:RDFDataset ;
+    ja:defaultGraph       <#tdb_inf> ;
+    .
 
 <#tdb_inf> a ja:InfModel ;
     rdfs:label "RDFS Inference Model" ;
-    ja:baseModel <#tdbGraph> ;
+    ja:baseModel <#tdb_graph> ;
     ja:reasoner
          [ ja:reasonerURL <http://jena.hpl.hp.com/2003/RDFSExptRuleReasoner> ]
     .
 
-<#tdbGraph> a tdb:GraphTDB;
-    tdb:location "DB";
+<#tdb_graph> a tdb:GraphTDB ;
+    tdb:dataset <#tdb_ds> .
+
+# A TDB datset used for RDF storage
+<#tdb_ds> a tdb:DatasetTDB;
+    tdb:location "Data";
     .
+
+## Initialize text query
+[] ja:loadClass       "org.apache.jena.query.text.TextQuery" .
+# A TextDataset is a regular dataset with a text index.
+text:TextDataset      rdfs:subClassOf   ja:RDFDataset .
+# Lucene index
+text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
+# Solr index
+#text:TextIndexSolr    rdfs:subClassOf   text:TextIndex .
+
+## ---------------------------------------------------------------
+## This URI must be fixed - it's used to assemble the text dataset.
+
+:text_dataset a text:TextDataset ;
+    text:dataset   <#tdb_inf_ds> ;
+    text:index     <#indexLucene> ;
+
+# Text index description
+<#indexLucene> a text:TextIndexLucene ;
+    text:directory <file:Lucene> ;
+    ##text:directory "mem" ;
+    text:entityMap <#entMap> ;
+    .
+
+# Mapping in the index
+# URI stored in field "uri"
+# rdfs:label is mapped to field "text"
+<#entMap> a text:EntityMap ;
+    text:entityField      "uri" ;
+    text:defaultField     "text" ;
+    text:map (
+         [ text:field "text" ; text:predicate rdfs:label ]
+         ) .
