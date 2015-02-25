@@ -103,6 +103,8 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
 <#tdb>  rdf:type fuseki:Service ;
     fuseki:name              "tdb" ;             # http://host/tdb
     fuseki:serviceQuery      "sparql" ;          # SPARQL query service
+    fuseki:serviceQuery      "query" ;
+    fuseki:serviceUpdate     "update" ;
     fuseki:dataset           <#dataset2> ;
     .
 
