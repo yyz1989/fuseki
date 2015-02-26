@@ -14,7 +14,8 @@ RUN apt-get install -y ruby ruby-dev ruby-bundler && \
 RUN apt-get update && \
 	apt-get install -y -q openssh-server && \
 	mkdir /var/run/sshd && \
-	echo "root:root" | chpasswd
+	echo "root:root" | chpasswd && \
+	sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 RUN wget http://apache.belnet.be/jena/binaries/jena-fuseki-1.1.1-distribution.tar.gz
 
