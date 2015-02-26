@@ -1,6 +1,6 @@
 # Licensed under the terms of http://www.apache.org/licenses/LICENSE-2.0
 
-## Fuseki memory + TDB + reasoner
+## Fuseki + TDB + reasoner + full text search + geo-spatial search
 
 @prefix :        <#> .
 @prefix fuseki:  <http://jena.apache.org/fuseki#> .
@@ -9,6 +9,7 @@
 @prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
 @prefix ja:      <http://jena.hpl.hp.com/2005/11/Assembler#> .
 @prefix text:    <http://jena.apache.org/text#> .
+@prefix spatial:    <http://jena.apache.org/spatial#> .
 
 [] a fuseki:Server ;
    # Timeout - server-wide default: milliseconds.
@@ -56,11 +57,11 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
     # A separate read-only graph store endpoint:
     fuseki:serviceReadGraphStore       "get" ;   # Graph store protocol (read only) -- /memory/get
 
-    fuseki:dataset           <#dataset1> ;
+    fuseki:dataset           <#mem_inf_ds> ;
     .
 
 ## In-memory, initially empty.
-<#dataset1> a ja:RDFDataset ;
+<#Mem_inf_ds> a ja:RDFDataset ;
     ja:defaultGraph       <#mem_inf> ;
      .
 
@@ -125,11 +126,11 @@ text:TextIndexLucene  rdfs:subClassOf   text:TextIndex .
 
 :text_dataset a text:TextDataset ;
     text:dataset   <#tdb_inf_ds> ;
-    text:index     <#indexLucene> ;
+    text:index     <#textIndexLucene> ;
     .
 
 # Text index description
-<#indexLucene> a text:TextIndexLucene ;
+<#textIndexLucene> a text:TextIndexLucene ;
     text:directory <file:Lucene> ;
     ##text:directory "mem" ;
     text:entityMap <#entMap> ;
@@ -157,10 +158,10 @@ spatial:SpatialIndexLucene  rdfs:subClassOf   spatial:SpatialIndex .
 :spatial_dataset a spatial:SpatialDataset ;
     spatial:dataset   :text_dataset ;
     ##spaital:index   <#indexSolr> ;
-    spatial:index     <#indexLucene> ;
+    spatial:index     <#spatialIndexLucene> ;
     .
 
-<#indexLucene> a spatial:SpatialIndexLucene ;
+<#spatialIndexLucene> a spatial:SpatialIndexLucene ;
     spatial:directory <file:Lucene> ;
     #spatial:directory "mem" ;
     spatial:definition <#definition> ;
