@@ -11,7 +11,8 @@ RUN apt-get install -y -q openjdk-7-jdk wget curl nano
 RUN apt-get install -y ruby ruby-dev ruby-bundler && \
 	rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y -q openssh-server && \
+RUN apt-get update && \
+	apt-get install -y -q openssh-server && \
 	mkdir /var/run/sshd && \
 	echo "root:root" | chpasswd
 
