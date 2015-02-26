@@ -13,7 +13,8 @@ RUN apt-get install -y ruby ruby-dev ruby-bundler && \
 
 RUN apt-get install -y -q openssh-server && \
 	mkdir /var/run/sshd && \
-	echo "root:root" | chpasswd
+	echo "root:root" | chpasswd && \
+	service ssh start
 
 RUN wget http://apache.belnet.be/jena/binaries/jena-fuseki-1.1.1-distribution.tar.gz
 
@@ -35,4 +36,4 @@ WORKDIR /fuseki
 
 COPY config.ttl /fuseki
 
-CMD ["fuseki-server", "--update --mem /ds"]
+CMD ["fuseki-server", "--config=config.ttl"]

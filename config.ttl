@@ -61,7 +61,7 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
     .
 
 ## In-memory, initially empty.
-<#Mem_inf_ds> a ja:RDFDataset ;
+<#mem_inf_ds> a ja:RDFDataset ;
     ja:defaultGraph       <#mem_inf> ;
      .
 
@@ -87,6 +87,9 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model .
     fuseki:serviceQuery      "sparql" ;          # SPARQL query service
     fuseki:serviceQuery      "query" ;
     fuseki:serviceUpdate     "update" ;
+    fuseki:serviceUpload     "upload" ;          # Non-SPARQL upload service
+    fuseki:serviceReadGraphStore    "get" ;
+    fuseki:serviceReadWriteGraphStore    "data" ;
     fuseki:dataset           :spatial_dataset ;
     .
 
@@ -171,12 +174,12 @@ spatial:SpatialIndexLucene  rdfs:subClassOf   spatial:SpatialIndex .
     spatial:entityField      "uri" ;
     spatial:geoField     "geo" ;
     # custom geo predicates for 1) Latitude/Longitude Format
-    spatial:hasSpatialPredicatePairs (
-         [ spatial:latitude :latitude_1 ; spatial:longitude :longitude_1 ]
-         [ spatial:latitude :latitude_2 ; spatial:longitude :longitude_2 ]
-         ) ;
+    #spatial:hasSpatialPredicatePairs (
+    #     [ spatial:latitude :latitude_1 ; spatial:longitude :longitude_1 ]
+    #     [ spatial:latitude :latitude_2 ; spatial:longitude :longitude_2 ]
+    #     ) ;
     # custom geo predicates for 2) Well Known Text (WKT) Literal
-    spatial:hasWKTPredicates (:wkt_1 :wkt_2) ;
+    # spatial:hasWKTPredicates (:wkt_1 :wkt_2) ;
     # custom SpatialContextFactory for 2) Well Known Text (WKT) Literal
-    spatial:spatialContextFactory
-         "com.spatial4j.core.context.jts.JtsSpatialContextFactory"
+    # spatial:spatialContextFactory
+    #     "com.spatial4j.core.context.jts.JtsSpatialContextFactory"
