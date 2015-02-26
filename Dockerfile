@@ -13,8 +13,7 @@ RUN apt-get install -y ruby ruby-dev ruby-bundler && \
 
 RUN apt-get install -y -q openssh-server && \
 	mkdir /var/run/sshd && \
-	echo "root:root" | chpasswd && \
-	service ssh start
+	echo "root:root" | chpasswd
 
 RUN wget http://apache.belnet.be/jena/binaries/jena-fuseki-1.1.1-distribution.tar.gz
 
@@ -28,12 +27,11 @@ RUN tar xzf jena*.tar.gz && \
 #	mv apache-jena-fuseki-2.0.0-SNAPSHOT fuseki && \
 #	chmod +x fuseki/fuseki-server fuseki/bin/s-*
 
-RUN export PATH=$PATH:/fuseki
-
 EXPOSE 3030 22
 
 WORKDIR /fuseki
 
 COPY config.ttl /fuseki
+COPY start.sh /fuseki
 
-CMD ["fuseki-server", "--config=config.ttl"]
+CMD ["/bin/bash", "start.sh"]
