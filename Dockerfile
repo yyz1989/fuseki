@@ -32,7 +32,7 @@ EXPOSE 3030 22
 
 WORKDIR /fuseki
 
-COPY config.ttl /fuseki
-COPY start.sh /fuseki
+COPY config.ttl /fuseki/
+COPY start.sh /fuseki/
 
 CMD ["/bin/bash", "start.sh"]
